@@ -28,6 +28,14 @@ class BST:
                 r=1+self.depth(root.right)
             return max(l,r)
 
+    def find_diameter(self,root):
+        lmax=rmax=0
+        if root.left!=None:
+            lmax=1+self.depth(root.left)
+        if root.right!=None:
+            rmax=1+self.depth(root.right)
+        return lmax+rmax 
+
     def bfs(self,root,mode='parse',searchitem=None):             #Breath First Search
         queue=[root]
         while len(queue)!=0:
@@ -104,7 +112,7 @@ def main():
         datum=float(input())
         root=tree.insert(datum,root)
     while True:
-        choice=int(input('\n\n\tBST Operations Menu:-\n1. Insert\n2. Delete\n3. Traverse\n4. Depth\n\nEnter your choice: '))
+        choice=int(input('\n\n\tBST Operations Menu:-\n1. Insert\n2. Delete\n3. Traverse\n4. Depth\n5. Diameter\n6. Exit\n\nEnter your choice: '))
         if choice==1:
             datum=input('Enter Value: ')
             root=tree.insert(float(datum),root)
@@ -127,7 +135,11 @@ def main():
                 print('\nSpiral: ',end='')
                 tree.sts(left_helix,root)
         elif choice==4:
-            print(f'\nDepth Of Tree {tree.depth(root)}')
+            print(f'\nDepth Of Tree: {tree.depth(root)}')
+        elif choice==5:
+            print(f"\nDiameter of Tree: {tree.find_diameter(root)}")
+        elif choice==6:
+            break    
 
 if __name__ == '__main__':
     main()
