@@ -1,10 +1,10 @@
 class Node:
     def __init__(self,datum):
         self.left=self.right=None
+        self.next=None      # if connecting levels
         self.datum=datum
 
 class BST:
-
     def insert(self,datum,root):
         if root==None:
             return Node(datum)
@@ -35,6 +35,27 @@ class BST:
         if root.right!=None:
             rmax=1+self.depth(root.right)
         return lmax+rmax 
+
+    def connect_level_nodes(self,root,first_node=None,pre_node=None):
+        if root.left!=None:
+            if first_node==None:
+                first_node=root.left
+            if pre_node!=None:
+                pre_node.next=root.left
+            pre_node=root.left
+            if root.right!=None:
+                root.left.next=root.right
+                pre_node=root.right
+        elif root.right!=None:
+            if first_node==None:
+                first_node=root.right
+            if pre_node!=None:
+                pre_node.next=root.right
+            pre_node=root.right    
+        if root.next!=None:
+            self.connect_level_nodes(root.next,first_node,pre_node)
+        elif first_node!=None:
+            self.connect_level_nodes(first_node)
 
     def bfs(self,root,mode='parse',searchitem=None):             #Breath First Search
         queue=[root]
@@ -112,7 +133,7 @@ def main():
         datum=float(input())
         root=tree.insert(datum,root)
     while True:
-        choice=int(input('\n\n\tBST Operations Menu:-\n1. Insert\n2. Delete\n3. Traverse\n4. Depth\n5. Diameter\n6. Exit\n\nEnter your choice: '))
+        choice=int(input('\n\n\tBST Operations Menu:-\n1. Insert\n2. Delete\n3. Traverse\n4. Depth\n5. Diameter\n6. Connect Level Nodes\n7. Exit\n\nEnter your choice: '))
         if choice==1:
             datum=input('Enter Value: ')
             root=tree.insert(float(datum),root)
@@ -139,6 +160,15 @@ def main():
         elif choice==5:
             print(f"\nDiameter of Tree: {tree.find_diameter(root)}")
         elif choice==6:
+            tree.connect_level_nodes(root)
+            node=root
+            while node!=None:
+                first_node=node.left
+                while first_node!=None:
+                    print(first_node.datum)
+                    first_node=first_node.next
+                node=node.left
+        elif choice==7:
             break    
 
 if __name__ == '__main__':
