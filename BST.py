@@ -1,3 +1,5 @@
+from collections import deque
+
 class Node:
     def __init__(self,datum):
         self.left=self.right=None
@@ -10,11 +12,13 @@ class BST:
             return Node(datum)
         else:
             if datum<=root.datum:
-                new=self.insert(datum,root.left)
-                root.left=new
+                # new=self.insert(datum,root.left)
+                # root.left=new
+                root.left=self.insert(datum,root.left)
             if datum>root.datum:
-                new=self.insert(datum,root.right)
-                root.right=new
+                # new=self.insert(datum,root.right)
+                # root.right=new
+                root.right=self.insert(datum,root.right)
         return root
 
     def depth(self,root):
@@ -57,26 +61,45 @@ class BST:
         elif first_node!=None:
             self.connect_level_nodes(first_node)
 
-    def bfs(self,root,mode='parse',searchitem=None):             #Breath First Search
-        queue=[root]
+    def bfs(self,root,mode='parse',searchitem=None,remove_none=False):             #Breath First Search
+        queue=deque([root])
+        flag=True
         while len(queue)!=0:
-            r=queue.pop(0)
+            r=queue.popleft()
             if mode=='search':
                 if r.datum==searchitem:
                     return r
             else:
                 print(r.datum,end=' ')
             if r.left!=None:
-                queue.append(r.left)
+                if remove_none:
+                    if r.left.datum==None:
+                        r.left=None
+                        flag=False
+                if flag:
+                    queue.append(r.left)
+                else:
+                    flag=True
             if r.right!=None:
-                queue.append(r.right)
+                if remove_none:
+                    if r.right.datum==None:
+                        r.right=None
+                        flag=False
+                if flag:
+                    queue.append(r.right)
+                else:
+                    flag=True
 
-    def dfs(self,root):             #Depth First Search
-        print(root.datum,end=' ')
+    def dfs(self,root,mode='parse',searchitem=None):             #Depth First Search
+        if mode=='search':
+            if root.datum==searchitem:
+                return root
+        else:
+            print(root.datum,end=' ')
         if root.left!=None:
-            self.dfs(root.left)
+            self.dfs(root.left,mode,searchitem)
         if root.right!=None:
-            self.dfs(root.right)
+            self.dfs(root.right,mode,searchitem)
 
     def sts(self,left_helix=True,root=None,mode='parse',searchItem=None):   #Spiral Traversal/Search
         if left_helix:
@@ -115,13 +138,19 @@ class BST:
                 self.sts(True)
 
     def delete(self,root,item):
-        node=self.bfs(root,mode='search',searchitem=item)
-        if node.left==None:
-            node.datum=0
-        while node.left.left != None:
-            node.datum=node.left.datum
-        node.datum=node.left.datum
-        node.left=None
+        node=self.bfs(root,mode='search',searchitem=item)  
+        try:
+            while node.left!= None:
+                node.datum=node.left.datum
+                node=node.left
+            while node.right!= None:
+                node.datum=node.right.datum
+                node=node.right
+            node.datum=None
+            print('Node deleted.\nBFS: ',end='')
+            self.bfs(root,remove_none=True)
+        except AttributeError:
+            print("No such value exist!!!")
 
 def main():
     tree=BST()
@@ -139,6 +168,7 @@ def main():
             root=tree.insert(float(datum),root)
         elif choice==2:
             datum=input('Enter value of node to be deleted: ')
+            tree.delete(root,float(datum))
         elif choice==3:
             way=int(input('\nHow does the parsing happen:\n1. Breadth First\n2. Depth First\n3. Spiral\n\nEnter your choice: '))
             if way==1:
