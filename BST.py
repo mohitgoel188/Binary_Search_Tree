@@ -12,12 +12,8 @@ class BST:
             return Node(datum)
         else:
             if datum<=root.datum:
-                # new=self.insert(datum,root.left)
-                # root.left=new
                 root.left=self.insert(datum,root.left)
             if datum>root.datum:
-                # new=self.insert(datum,root.right)
-                # root.right=new
                 root.right=self.insert(datum,root.right)
         return root
 
@@ -32,7 +28,7 @@ class BST:
                 r=1+self.depth(root.right)
             return max(l,r)
 
-    def find_diameter(self,root):
+    def find_diameter_passing_through_root(self,root):
         lmax=rmax=0
         if root.left!=None:
             lmax=1+self.depth(root.left)
@@ -48,7 +44,7 @@ class BST:
                 pre_node.next=root.left
             pre_node=root.left
             if root.right!=None:
-                root.left.next=root.right
+                pre_node.next=root.right
                 pre_node=root.right
         elif root.right!=None:
             if first_node==None:
@@ -188,7 +184,7 @@ def main():
         elif choice==4:
             print(f'\nDepth Of Tree: {tree.depth(root)}')
         elif choice==5:
-            print(f"\nDiameter of Tree: {tree.find_diameter(root)}")
+            print(f"\nDiameter of Tree: {tree.find_diameter_passing_through_root(root)}")
         elif choice==6:
             tree.connect_level_nodes(root)
             node=root
